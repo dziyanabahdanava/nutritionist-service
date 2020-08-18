@@ -1,8 +1,9 @@
 package com.epam.ms.service;
 
 import com.epam.ms.repository.DefaultNutritionProgramRepository;
-import com.epam.ms.repository.entity.DefaultNutritionProgram;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.epam.ms.repository.domain.DefaultNutritionProgram;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,13 +12,14 @@ import java.util.Optional;
 import static java.util.Objects.nonNull;
 
 @Service
+@RequiredArgsConstructor
 public class DefaultNutritionProgramService {
-    @Autowired
+    @NonNull
     private DefaultNutritionProgramRepository repository;
 
     public List<DefaultNutritionProgram> getAll(Integer minCalories, Integer maxCalories) {
         return nonNull(minCalories) && nonNull(maxCalories)
-                ? repository.findTopByCaloriesBetweenOrderByCaloriesDesc(minCalories, maxCalories)
+                ? repository.findByCaloriesBetweenOrderByCaloriesDesc(minCalories, maxCalories)
                 : (List) repository.findAll();
     }
 
@@ -29,22 +31,21 @@ public class DefaultNutritionProgramService {
         return (List)repository.findAll();
     }
 
-    public DefaultNutritionProgram getById(Long id) {
+    public DefaultNutritionProgram findById(String id) {
         return repository.findById(id).orElse(null);
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         repository.deleteById(id);
     }
 
-    public Long update(Long id, DefaultNutritionProgram program) {
+    public DefaultNutritionProgram update(String id, DefaultNutritionProgram program) {
         Optional<DefaultNutritionProgram> existingProgram = repository.findById(id);
-        if(!existingProgram.isPresent()) {
-            return repository.save(program).getId();
-        } else {
+        if(existingProgram.isPresent()) {
             DefaultNutritionProgram currentProgram = existingProgram.get();
             copyProgramData(program, currentProgram);
-            repository.save(currentProgram);
+            return repository.save(currentProgram);
+        } else {
             return null;
         }
     }

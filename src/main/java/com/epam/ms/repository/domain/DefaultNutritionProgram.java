@@ -1,6 +1,7 @@
-package com.epam.ms.repository.entity;
+package com.epam.ms.repository.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -9,7 +10,8 @@ import javax.validation.constraints.Size;
 
 @Data
 @Entity
-@Table(name = "default_nutrition_programs")
+@Table(name = "default_nutrition_programs", schema = "nutrition")
+@EqualsAndHashCode(callSuper=false)
 public class DefaultNutritionProgram extends BaseNutritionistEntity {
 
     @Size(max = 255, message = "The path must be up to 255 characters")
