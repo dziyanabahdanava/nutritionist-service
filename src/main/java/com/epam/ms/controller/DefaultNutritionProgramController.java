@@ -1,8 +1,10 @@
 package com.epam.ms.controller;
 
-import com.epam.ms.repository.entity.DefaultNutritionProgram;
+import com.epam.ms.repository.domain.DefaultNutritionProgram;
 import com.epam.ms.service.DefaultNutritionProgramService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,20 +21,21 @@ import static java.util.Objects.nonNull;
  */
 @RestController
 @RequestMapping("/default_nutrition_program")
+@Slf4j
+@RequiredArgsConstructor
 public class DefaultNutritionProgramController {
-    private static final String CREATED_USER_URI = "/users/%s";
-
-    @Autowired
+    @NonNull
     private DefaultNutritionProgramService service;
 
     @GetMapping
-    public List<DefaultNutritionProgram> getAll(@RequestParam(required = false) @Min(1) Integer minCalories, @RequestParam(required = false) @Min(2) Integer maxCalories) {
+    public List<DefaultNutritionProgram> findAll(@RequestParam(required = false) @Min(1) Integer minCalories, @RequestParam(required = false) @Min(2) Integer maxCalories) {
         return service.getAll(minCalories, maxCalories);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable Long id) {
-        DefaultNutritionProgram program = service.getById(id);
+    public ResponseEntity getById(@PathVariable String id) {
+        DefaultNutritionProgram program = service.findById(id);
+        log.debug("Trying to find a program with id {}", id);
         return isNull(program)
                 ? ResponseEntity.notFound().build()
                 : ResponseEntity.ok(program);
@@ -41,24 +44,29 @@ public class DefaultNutritionProgramController {
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody DefaultNutritionProgram user) {
         DefaultNutritionProgram createdProgram = service.create(user);
+        String id = createdProgram.getId();
+        log.info("A new default nutrition program is created: /default_nutrition_program/{}", id);
         return ResponseEntity.created(
-                URI.create(String.format(CREATED_USER_URI, createdProgram.getId())))
+                URI.create(String.format("/default_nutrition_program/%s", id)))
                 .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         service.delete(id);
+        log.info("The default nutrition program with id {} is deleted", id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody DefaultNutritionProgram program) {
-        Long createdProgramId = service.update(id, program);
-        return nonNull(createdProgramId)
-                ? ResponseEntity.created(URI.create(String.format(CREATED_USER_URI, createdProgramId.toString()))).build()
-                : ResponseEntity.noContent().build();
-
+    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody DefaultNutritionProgram program) {
+        DefaultNutritionProgram createdProgram = service.update(id, program);
+        if(nonNull(createdProgram)) {
+            log.info("The default nutrition program with id {} is updated", id);
+            return ResponseEntity.noContent().build();
+        } else {
+            log.error("The default nutrition program with id {} not found", id);
+            return ResponseEntity.notFound().build();
+        }
     }
-
 }
