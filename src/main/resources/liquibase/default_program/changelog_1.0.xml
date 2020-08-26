@@ -1,0 +1,31 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="Dziyana Bahdanava" id="create schema nutrition">
+        <sql dbms="postgresql" endDelimiter=";">
+            CREATE SCHEMA IF NOT EXISTS nutrition
+        </sql>
+    </changeSet>
+    <changeSet author="Dziyana Bahdanava" id="create table default_nutrition_programs">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="default_nutrition_programs"/>
+            </not>
+        </preConditions>
+        <createTable tableName="default_nutrition_programs" schemaName="nutrition">
+            <column name ="id" type="VARCHAR(36)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="path" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="calories" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number_of_days" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
