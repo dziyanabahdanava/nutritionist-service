@@ -16,6 +16,7 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseEntity<ErrorData> constraintViolationErrorHandler(ConstraintViolationException e) {
         ErrorData errorData = new ErrorData(e.getMessage(), e);
+        log.error("Validation failed", e);
         return ResponseEntity.badRequest().body(errorData);
     }
 
