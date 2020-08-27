@@ -8,8 +8,7 @@ spring:
       password: mongo
       host: localhost
       port: 27017
-#  rabbitmq:
-#    host: 10.0.75.1
-#    port: 5672
-#    username: guest
-#    password: guest
+rabbitmq:
+  host: localhost
+  queue: nutritionEventsQueue
+

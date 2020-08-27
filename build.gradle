@@ -30,7 +30,6 @@ dependencies {
     implementation 'org.springframework.data:spring-data-mongodb'
     implementation 'org.springframework.amqp:spring-rabbit'
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
-
 }
 
 test {

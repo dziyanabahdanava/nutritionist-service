@@ -1,9 +1,8 @@
 package com.epam.ms.service;
 
-import com.epam.ms.event.Event;
+import com.epam.ms.queue.QueueHandler;
 import com.epam.ms.repository.DefaultNutritionProgramRepository;
 import com.epam.ms.repository.domain.DefaultNutritionProgram;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.NonNull;
@@ -28,10 +27,9 @@ public class DefaultNutritionProgramService {
 
     @NonNull
     private DefaultNutritionProgramRepository repository;
+
     @NonNull
-    private AmqpTemplate template;
-    @NonNull
-    private ObjectMapper jacksonMapper;
+    private QueueHandler queueHandler;
 
     public List<DefaultNutritionProgram> getAll(Integer minCalories, Integer maxCalories) {
         return nonNull(minCalories) && nonNull(maxCalories)
@@ -39,14 +37,10 @@ public class DefaultNutritionProgramService {
                 : repository.findAll();
     }
 
-    public DefaultNutritionProgram create(DefaultNutritionProgram entity) throws JsonProcessingException {
+    public DefaultNutritionProgram create(DefaultNutritionProgram entity) {
         DefaultNutritionProgram createdProgram = repository.save(entity);
-        sendEventToQueue(NUTRITION_PROGRAM_CREATED_EVENT, createdProgram);
+        queueHandler.sendEventToQueue(NUTRITION_PROGRAM_CREATED_EVENT, createdProgram);
         return createdProgram;
-    }
-
-    public List<DefaultNutritionProgram> getAll() {
-        return repository.findAll();
     }
 
     public DefaultNutritionProgram findById(String id) {
@@ -57,12 +51,12 @@ public class DefaultNutritionProgramService {
         repository.deleteById(id);
     }
 
-    public DefaultNutritionProgram update(String id, DefaultNutritionProgram program) throws JsonProcessingException {
+    public DefaultNutritionProgram update(String id, DefaultNutritionProgram program) {
         Optional<DefaultNutritionProgram> existingProgram = repository.findById(id);
         if(existingProgram.isPresent()) {
             DefaultNutritionProgram currentProgram = existingProgram.get();
             copyProgramData(program, currentProgram);
-            sendEventToQueue(NUTRITION_PROGRAM_UPDATED_EVENT, currentProgram);
+            queueHandler.sendEventToQueue(NUTRITION_PROGRAM_UPDATED_EVENT, currentProgram);
             return repository.save(currentProgram);
         } else {
             return null;
@@ -73,11 +67,5 @@ public class DefaultNutritionProgramService {
         to.setPath(from.getPath());
         to.setCalories(from.getCalories());
         to.setNumberOfDays(from.getNumberOfDays());
-    }
-
-    private void sendEventToQueue(String eventKey, DefaultNutritionProgram program) throws JsonProcessingException {
-        log.info("Send event {} to queue {}", eventKey, NUTRITION_EVENTS_QUEUE);
-        Event event = new Event(GROUP, eventKey, ImmutableMap.of("id", program.getId(), "calories", program.getCalories()));
-        template.convertAndSend(NUTRITION_EVENTS_QUEUE, jacksonMapper.writeValueAsString(event));
     }
 }

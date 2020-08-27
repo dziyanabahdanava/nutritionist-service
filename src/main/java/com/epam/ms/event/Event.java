@@ -3,7 +3,6 @@ package com.epam.ms.event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -11,7 +10,7 @@ import java.util.Map;
  */
 @Data
 @AllArgsConstructor
-public class Event implements Serializable {
+public class Event {
 
     private String group;
     private String event;
