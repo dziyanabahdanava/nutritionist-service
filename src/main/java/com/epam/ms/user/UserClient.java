@@ -2,21 +2,20 @@ package com.epam.ms.user;
 
 
 import com.epam.ms.user.dto.UserProfile;
-import feign.Headers;
-import feign.Param;
-import feign.RequestLine;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+@FeignClient(value = "user-service", url = "https://localhost:8080", path = "/users")
 public interface UserClient {
-    @RequestLine("GET /{id}")
-    UserProfile findById(@Param("id") String id);
 
-    @RequestLine("GET")
-    List<UserProfile> findByUserId();
+    @RequestMapping(method = GET, value = "/{id}/profile")
+    UserProfile findProfileByUserId(@PathVariable String id);
 
-    @RequestLine("POST")
-    @Headers("Content-Type: application/json")
+    @RequestMapping(method = POST)
     void create(UserProfile userProfile);
+
 }
