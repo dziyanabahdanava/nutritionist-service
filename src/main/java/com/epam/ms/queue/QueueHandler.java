@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Component;
-import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -26,7 +27,7 @@ public class QueueHandler {
 
     public void sendEventToQueue(String eventKey, DefaultNutritionProgram program) {
         log.info("Send event {} to queue {}", eventKey, NUTRITION_EVENTS_QUEUE);
-        Event event = new Event(GROUP, eventKey, ImmutableMap.of("id", program.getId(), "calories", program.getCalories()));
+        Event event = new Event(GROUP, eventKey, Map.of("id", program.getId(), "calories", program.getCalories()));
         try {
             template.convertAndSend(NUTRITION_EVENTS_QUEUE, jacksonMapper.writeValueAsString(event));
         } catch (JsonProcessingException e) {

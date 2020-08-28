@@ -29,7 +29,11 @@ dependencies {
     implementation 'org.mongodb:mongo-java-driver'
     implementation 'org.springframework.data:spring-data-mongodb'
     implementation 'org.springframework.amqp:spring-rabbit'
-    compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+    runtime group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR7', ext: 'pom'
+    //compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.4.7.RELEASE'
+    compile group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.0'
+    compile group: 'io.github.openfeign', name: 'feign-gson', version: '11.0'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 test {

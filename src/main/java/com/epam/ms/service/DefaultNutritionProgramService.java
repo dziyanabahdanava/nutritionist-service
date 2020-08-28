@@ -3,12 +3,13 @@ package com.epam.ms.service;
 import com.epam.ms.queue.QueueHandler;
 import com.epam.ms.repository.DefaultNutritionProgramRepository;
 import com.epam.ms.repository.domain.DefaultNutritionProgram;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
+import com.epam.ms.service.exception.ServiceException;
+import com.epam.ms.user.UserProfileHandler;
+import com.epam.ms.user.dto.UserProfile;
+import com.epam.ms.user.UserServiceMediator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,16 +21,17 @@ import static java.util.Objects.nonNull;
 @Service
 @RequiredArgsConstructor
 public class DefaultNutritionProgramService {
-    private static final String NUTRITION_EVENTS_QUEUE = "nutritionEventsQueue";
-    private static final String GROUP = "nutrition";
     private static final String NUTRITION_PROGRAM_CREATED_EVENT = "nutrition.created";
     private static final String NUTRITION_PROGRAM_UPDATED_EVENT = "nutrition.updated";
 
     @NonNull
     private DefaultNutritionProgramRepository repository;
-
     @NonNull
     private QueueHandler queueHandler;
+    @NonNull
+    private UserServiceMediator mediator;
+    @NonNull
+    private UserProfileHandler handler;
 
     public List<DefaultNutritionProgram> getAll(Integer minCalories, Integer maxCalories) {
         return nonNull(minCalories) && nonNull(maxCalories)
@@ -49,6 +51,18 @@ public class DefaultNutritionProgramService {
 
     public void delete(String id) {
         repository.deleteById(id);
+    }
+
+    public List<DefaultNutritionProgram> findForUser(String userId) {
+        List<UserProfile> userProfiles = mediator.getUserProfile(userId);
+        if(userProfiles.isEmpty()) {
+            throw new ServiceException(String.format("User profile for %s is not completed", userId));
+        }
+        UserProfile profile = userProfiles.get(0);
+        int minCalories = handler.calculateMinCaloriesForUsersGoal(profile);
+        int maxCalories = handler.calculateMaxCaloriesForUsersGoal(profile);
+
+        return repository.findByCaloriesBetweenOrderByCaloriesDesc(minCalories, maxCalories);
     }
 
     public DefaultNutritionProgram update(String id, DefaultNutritionProgram program) {

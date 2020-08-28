@@ -29,8 +29,12 @@ public class DefaultNutritionProgramController {
     private DefaultNutritionProgramService service;
 
     @GetMapping
-    public ResponseEntity<List<DefaultNutritionProgram>> findAll(@RequestParam(required = false) @Min(1) Integer minCalories, @RequestParam(required = false) @Min(2) Integer maxCalories) {
-        return ResponseEntity.ok(service.getAll(minCalories, maxCalories));
+    public ResponseEntity<List<DefaultNutritionProgram>> findAll(@RequestParam(required = false) @Min(1) Integer minCalories,
+                                                                 @RequestParam(required = false) @Min(2) Integer maxCalories,
+                                                                 @RequestParam (required = false) String userId) {
+        return isNull(userId) ?
+                ResponseEntity.ok(service.getAll(minCalories, maxCalories))
+                : ResponseEntity.ok(service.findForUser(userId));
     }
 
     @GetMapping("/{id}")
