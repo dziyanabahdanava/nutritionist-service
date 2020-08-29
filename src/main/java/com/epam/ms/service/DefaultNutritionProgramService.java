@@ -4,9 +4,9 @@ import com.epam.ms.queue.QueueHandler;
 import com.epam.ms.repository.DefaultNutritionProgramRepository;
 import com.epam.ms.repository.domain.DefaultNutritionProgram;
 import com.epam.ms.service.exception.ServiceException;
+import com.epam.ms.user.UserClient;
 import com.epam.ms.user.UserProfileHandler;
 import com.epam.ms.user.dto.UserProfile;
-import com.epam.ms.user.UserServiceMediator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,9 @@ public class DefaultNutritionProgramService {
     @NonNull
     private DefaultNutritionProgramRepository repository;
     @NonNull
-    private QueueHandler queueHandler;
+    private final QueueHandler queueHandler;
     @NonNull
-    private UserServiceMediator mediator;
+    private final UserClient userClient;
     @NonNull
     private UserProfileHandler handler;
 
@@ -54,13 +54,12 @@ public class DefaultNutritionProgramService {
     }
 
     public List<DefaultNutritionProgram> findForUser(String userId) {
-        List<UserProfile> userProfiles = mediator.getUserProfile(userId);
-        if(userProfiles.isEmpty()) {
+        UserProfile userProfile = userClient.findProfileByUserId(userId);
+        if(userProfile == null) {
             throw new ServiceException(String.format("User profile for %s is not completed", userId));
         }
-        UserProfile profile = userProfiles.get(0);
-        int minCalories = handler.calculateMinCaloriesForUsersGoal(profile);
-        int maxCalories = handler.calculateMaxCaloriesForUsersGoal(profile);
+        int minCalories = handler.calculateMinCaloriesForUsersGoal(userProfile);
+        int maxCalories = handler.calculateMaxCaloriesForUsersGoal(userProfile);
 
         return repository.findByCaloriesBetweenOrderByCaloriesDesc(minCalories, maxCalories);
     }
