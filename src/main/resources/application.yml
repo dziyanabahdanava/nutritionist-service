@@ -8,9 +8,16 @@ spring:
       password: mongo
       host: localhost
       port: 27017
+
+#custom properties
 rabbitmq:
   host: localhost
   queue: nutritionEventsQueue
+caloriescalculator:
+  weightFactor: 9.99
+  heightFactor: 6.25
+  ageFactor: -4.92
+  deduction: -161
 
 feign:
   client:

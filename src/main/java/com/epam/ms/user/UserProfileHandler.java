@@ -1,14 +1,16 @@
 package com.epam.ms.user;
 
+import com.epam.ms.config.ConfigProperties;
 import com.epam.ms.user.dto.UserProfile;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class UserProfileHandler {
-    private static final double WEIGHT_FACTOR = 9.99;
-    private static final double HEIGHT_FACTOR = 6.25;
-    private static final double AGE_FACTOR = -4.92;
-    private static final double DEDUCTION = -161;
+    @Autowired
+    private ConfigProperties properties;
 
     public int calculateMinCaloriesForUsersGoal(UserProfile profile) {
         double factor = switch(profile.getGoal()) {
@@ -34,9 +36,11 @@ public class UserProfileHandler {
             case LOW_ACTIVITY -> 1.375;
             case ACTIVE_LIFESTYLE -> 1.555;
         };
-        return (WEIGHT_FACTOR * profile.getAge()
-                + HEIGHT_FACTOR * profile.getHeight()
-                + AGE_FACTOR * profile.getAge()
-                + DEDUCTION) * factor;
+        double caloriesRate = (properties.getWeightFactor() * profile.getWeight()
+                + properties.getHeightFactor() * profile.getHeight()
+                + properties.getAgeFactor() * profile.getAge()
+                + properties.getDeduction()) * factor;
+        log.info("The calories rate for {} is: {}", profile.getId(), caloriesRate);
+        return caloriesRate;
     }
 }
