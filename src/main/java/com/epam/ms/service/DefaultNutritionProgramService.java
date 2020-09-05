@@ -1,9 +1,15 @@
 package com.epam.ms.service;
 
+import com.epam.ms.queue.QueueHandler;
 import com.epam.ms.repository.DefaultNutritionProgramRepository;
 import com.epam.ms.repository.domain.DefaultNutritionProgram;
+import com.epam.ms.service.exception.ServiceException;
+import com.epam.ms.user.UserClient;
+import com.epam.ms.user.UserProfileHandler;
+import com.epam.ms.user.dto.UserProfile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,24 +17,32 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultNutritionProgramService {
+    private static final String NUTRITION_PROGRAM_CREATED_EVENT = "nutrition.created";
+    private static final String NUTRITION_PROGRAM_UPDATED_EVENT = "nutrition.updated";
+
     @NonNull
     private DefaultNutritionProgramRepository repository;
+    @NonNull
+    private final QueueHandler queueHandler;
+    @NonNull
+    private final UserClient userClient;
+    @NonNull
+    private UserProfileHandler handler;
 
     public List<DefaultNutritionProgram> getAll(Integer minCalories, Integer maxCalories) {
         return nonNull(minCalories) && nonNull(maxCalories)
                 ? repository.findByCaloriesBetweenOrderByCaloriesDesc(minCalories, maxCalories)
-                : (List) repository.findAll();
+                : repository.findAll();
     }
 
     public DefaultNutritionProgram create(DefaultNutritionProgram entity) {
-        return repository.save(entity);
-    }
-
-    public List<DefaultNutritionProgram> getAll() {
-        return (List)repository.findAll();
+        DefaultNutritionProgram createdProgram = repository.save(entity);
+        queueHandler.sendEventToQueue(NUTRITION_PROGRAM_CREATED_EVENT, createdProgram);
+        return createdProgram;
     }
 
     public DefaultNutritionProgram findById(String id) {
@@ -39,11 +53,23 @@ public class DefaultNutritionProgramService {
         repository.deleteById(id);
     }
 
+    public List<DefaultNutritionProgram> findForUser(String userId) {
+        UserProfile userProfile = userClient.findProfileByUserId(userId);
+        if(userProfile == null) {
+            throw new ServiceException(String.format("User profile for %s is not completed", userId));
+        }
+        int minCalories = handler.calculateMinCaloriesForUsersGoal(userProfile);
+        int maxCalories = handler.calculateMaxCaloriesForUsersGoal(userProfile);
+
+        return repository.findByCaloriesBetweenOrderByCaloriesDesc(minCalories, maxCalories);
+    }
+
     public DefaultNutritionProgram update(String id, DefaultNutritionProgram program) {
         Optional<DefaultNutritionProgram> existingProgram = repository.findById(id);
         if(existingProgram.isPresent()) {
             DefaultNutritionProgram currentProgram = existingProgram.get();
             copyProgramData(program, currentProgram);
+            queueHandler.sendEventToQueue(NUTRITION_PROGRAM_UPDATED_EVENT, currentProgram);
             return repository.save(currentProgram);
         } else {
             return null;

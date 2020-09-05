@@ -1,16 +1,31 @@
 server:
   port: 8082
 spring:
-  datasource:
-    password: postgres
-    platform: postgres
-    url: jdbc:postgresql://localhost:5448/postgres
-    username: postgres
-  jpa:
-    database: POSTGRESQL
-    show-sql: true
-  hibernate:
-    ddl-auto: none
-  liquibase:
-    enabled: true
-    change-log: classpath:liquibase/db.changelog.xml
+  data:
+    mongodb:
+      database: nutritionist
+      username: mongo
+      password: mongo
+      host: localhost
+      port: 27017
+
+#custom properties
+rabbitmq:
+  host: localhost
+  queue: nutritionEventsQueue
+caloriescalculator:
+  weightFactor: 9.99
+  heightFactor: 6.25
+  ageFactor: -4.92
+  deduction: -161
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+      user-service:
+        connectTimeout: 2000
+        readTimeout: 2000

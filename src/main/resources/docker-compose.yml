@@ -1,0 +1,11 @@
+version: '3'
+services:
+  database:
+    image: 'mongo'
+    container_name: 'mongodb-docker'
+    environment:
+      - MONGO_INITDB_DATABASE: nutritionist
+      - MONGO_INITDB_ROOT_USERNAME: mongo
+      - MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27017-27019:27017-27019"

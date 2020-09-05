@@ -2,6 +2,7 @@ package com.epam.ms.controller;
 
 import com.epam.ms.repository.domain.DefaultNutritionProgram;
 import com.epam.ms.service.DefaultNutritionProgramService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +29,16 @@ public class DefaultNutritionProgramController {
     private DefaultNutritionProgramService service;
 
     @GetMapping
-    public List<DefaultNutritionProgram> findAll(@RequestParam(required = false) @Min(1) Integer minCalories, @RequestParam(required = false) @Min(2) Integer maxCalories) {
-        return service.getAll(minCalories, maxCalories);
+    public ResponseEntity<List<DefaultNutritionProgram>> findAll(@RequestParam(required = false) @Min(1) Integer minCalories,
+                                                                 @RequestParam(required = false) @Min(2) Integer maxCalories,
+                                                                 @RequestParam (required = false) String userId) {
+        return isNull(userId) ?
+                ResponseEntity.ok(service.getAll(minCalories, maxCalories))
+                : ResponseEntity.ok(service.findForUser(userId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable String id) {
+    public ResponseEntity<DefaultNutritionProgram> getById(@PathVariable String id) {
         DefaultNutritionProgram program = service.findById(id);
         log.debug("Trying to find a program with id {}", id);
         return isNull(program)
@@ -42,7 +47,7 @@ public class DefaultNutritionProgramController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody DefaultNutritionProgram user) {
+    public ResponseEntity<Void> create(@RequestBody DefaultNutritionProgram user) throws JsonProcessingException {
         DefaultNutritionProgram createdProgram = service.create(user);
         String id = createdProgram.getId();
         log.info("A new default nutrition program is created: /default_nutrition_program/{}", id);
@@ -59,7 +64,7 @@ public class DefaultNutritionProgramController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody DefaultNutritionProgram program) {
+    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody DefaultNutritionProgram program) throws JsonProcessingException {
         DefaultNutritionProgram createdProgram = service.update(id, program);
         if(nonNull(createdProgram)) {
             log.info("The default nutrition program with id {} is updated", id);

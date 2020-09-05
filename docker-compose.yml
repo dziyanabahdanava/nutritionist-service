@@ -1,0 +1,19 @@
+version: '3'
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  mongodb:
+    container_name: mongo
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: nutritionist
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./docker/mongo/:/docker-entrypoint-initdb.d/
+    ports:
+      - "27017:27017"
