@@ -8,17 +8,6 @@ spring:
       password: mongo
       host: localhost
       port: 27017
-
-#custom properties
-rabbitmq:
-  host: localhost
-  queue: nutritionEventsQueue
-caloriescalculator:
-  weightFactor: 9.99
-  heightFactor: 6.25
-  ageFactor: -4.92
-  deduction: -161
-
 feign:
   client:
     config:
@@ -29,3 +18,15 @@ feign:
       user-service:
         connectTimeout: 2000
         readTimeout: 2000
+
+#custom properties
+rabbitmq:
+  host: localhost
+  queue: nutritionEventsQueue
+caloriescalculator:
+  weightFactor: 9.99
+  heightFactor: 6.25
+  ageFactor: -4.92
+  deduction: -161
+management:
+  endpoints.web.exposure.include: health,info,refresh
