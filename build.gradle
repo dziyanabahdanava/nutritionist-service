@@ -3,12 +3,13 @@ plugins {
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'io.franzbecker.gradle-lombok' version '1.14'
+    id "au.com.dius.pact" version "4.1.7"
 }
 
 group 'com.epam.ms'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.14
+sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()
@@ -19,8 +20,13 @@ lombok {
     sha256 = ""
 }
 
+pact {
+    publish {
+        pactDirectory = "/pacts"
+    }
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '5.5.2'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -32,6 +38,13 @@ dependencies {
     runtime group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR7', ext: 'pom'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter', version: '2.2.5.RELEASE'
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(
+            "au.com.dius:pact-jvm-consumer_2.12:3.6.10",
+            "au.com.dius:pact-jvm-consumer-junit5_2.12:3.6.10",
+            "au.com.dius:pact-jvm-provider_2.12:3.6.10",
+            "au.com.dius:pact-jvm-provider-junit5_2.12:3.6.10")
 }
 
 test {
