@@ -1,6 +1,7 @@
 package com.epam.ms.service.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import static java.util.Objects.nonNull;
 
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException {
     private String errorCode;
     private Map<String, String> userParameters = new HashMap<>();

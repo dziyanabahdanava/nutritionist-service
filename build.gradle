@@ -22,7 +22,7 @@ lombok {
 
 pact {
     publish {
-        pactDirectory = "/pacts"
+        pactDirectory = "${projectDir}/pacts"
     }
 }
 
