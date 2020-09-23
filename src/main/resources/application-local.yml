@@ -1,0 +1,35 @@
+server:
+  port: 8082
+spring:
+  data:
+    mongodb:
+      database: nutritionist
+      username: mongo
+      password: mongo
+      host: mongodb
+      port: 27017
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+      user-service:
+        connectTimeout: 2000
+        readTimeout: 2000
+
+#custom properties
+rabbitmq:
+  host: rabbitmq
+  queue: nutritionEventsQueue
+caloriescalculator:
+  weightFactor: 9.99
+  heightFactor: 6.25
+  ageFactor: -4.92
+  deduction: -161
+management:
+  endpoints.web.exposure.include: health,info,refresh
+clients:
+  user-service:
+    url: http://user-service:8080
