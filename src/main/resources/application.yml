@@ -1,6 +1,10 @@
 server:
   port: 8082
 spring:
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
   data:
     mongodb:
       database: nutritionist
@@ -18,6 +22,8 @@ feign:
       user-service:
         connectTimeout: 2000
         readTimeout: 2000
+  httpclient:
+    enabled: true
 
 #custom properties
 rabbitmq:
@@ -30,3 +36,6 @@ caloriescalculator:
   deduction: -161
 management:
   endpoints.web.exposure.include: health,info,refresh
+clients:
+  user-service:
+    url: http://user-service

@@ -13,6 +13,11 @@ sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR1")
 }
 
 lombok {
@@ -35,16 +40,24 @@ dependencies {
     implementation 'org.mongodb:mongo-java-driver'
     implementation 'org.springframework.data:spring-data-mongodb'
     implementation 'org.springframework.amqp:spring-rabbit'
-    runtime group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR7', ext: 'pom'
+   // runtime 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR7', ext: 'pom'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter', version: '2.2.5.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-starter:2.2.5.RELEASE'
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-all:2.2.4.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer:2.2.5.RELEASE'
     testImplementation(
             "au.com.dius:pact-jvm-consumer_2.12:3.6.10",
             "au.com.dius:pact-jvm-consumer-junit5_2.12:3.6.10",
             "au.com.dius:pact-jvm-provider_2.12:3.6.10",
             "au.com.dius:pact-jvm-provider-junit5_2.12:3.6.10")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 test {
