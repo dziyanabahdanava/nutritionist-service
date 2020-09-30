@@ -16,10 +16,6 @@ repositories {
     maven { url 'https://repo.spring.io/milestone' }
 }
 
-ext {
-    set('springCloudVersion', "Hoxton.SR1")
-}
-
 lombok {
     version = '1.18.4'
     sha256 = ""
@@ -33,31 +29,27 @@ pact {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.mongodb:mongo-java-driver'
     implementation 'org.springframework.data:spring-data-mongodb'
+
     implementation 'org.springframework.amqp:spring-rabbit'
-   // runtime 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Hoxton.SR7', ext: 'pom'
+
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.cloud:spring-cloud-starter:2.2.5.RELEASE'
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-all:2.2.4.RELEASE'
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer:2.2.5.RELEASE'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery:2.2.4.RELEASE'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
     testImplementation(
             "au.com.dius:pact-jvm-consumer_2.12:3.6.10",
             "au.com.dius:pact-jvm-consumer-junit5_2.12:3.6.10",
             "au.com.dius:pact-jvm-provider_2.12:3.6.10",
-            "au.com.dius:pact-jvm-provider-junit5_2.12:3.6.10")
-}
+            "au.com.dius:pact-jvm-provider-junit5_2.12:3.6.10",
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
+            "org.junit.jupiter:junit-jupiter")
 }
 
 test {
