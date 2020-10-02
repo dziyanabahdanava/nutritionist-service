@@ -57,41 +57,10 @@ public class UserServiceContractTest {
                 .toPact();
     }
 
-//    @Pact(consumer = "nutritionist_service", provider = "user_service")
-//    public RequestResponsePact postShouldCreateProfile(PactDslWithProvider builder) {
-//        UserProfile defaultProfile = createDefaultProfile();
-//        String defaultJSON = "";
-//        try {
-//            defaultJSON = mapper.writeValueAsString(defaultProfile);
-//        } catch (JsonProcessingException e) {
-//
-//        }
-//        return builder
-//                .given("test POST")
-//                .uponReceiving("POST REQUEST")
-//                .method("POST")
-//                .headers(headers)
-//                .body(defaultJSON)
-//                .path("/users/profiles")
-//                .willRespondWith()
-//                .status(201)
-//                .toPact();
-//    }
-
     @Test
     @PactTestFor(pactMethod = "getUserProfile")
     public void get_shouldReturnProfileByUserId() {
         UserProfile profile = userClient.findProfileByUserId(USER_ID);
         assertEquals(userProfile, profile);
-    }
-
-    private UserProfile createDefaultProfile() {
-        UserProfile profile = new UserProfile();
-        profile.setPhysicalActivity(PhysicalActivity.LOW_ACTIVITY);
-        profile.setGoal(Goal.BODY_RELIEF);
-        profile.setWeight(80);
-        profile.setHeight(175);
-        profile.setAge(25);
-        return profile;
     }
 }

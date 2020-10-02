@@ -36,6 +36,3 @@ caloriescalculator:
   deduction: -161
 management:
   endpoints.web.exposure.include: health,info,refresh
-clients:
-  user-service:
-    url: http://user-service
