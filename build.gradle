@@ -37,7 +37,10 @@ dependencies {
     implementation 'org.springframework.amqp:spring-rabbit'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.2.4.RELEASE'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    compile "io.github.resilience4j:resilience4j-spring-boot2:1.5.0"
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-aop')
 
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery:2.2.4.RELEASE'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

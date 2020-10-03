@@ -4,15 +4,17 @@ import com.epam.ms.client.UserClient;
 import com.epam.ms.queue.QueueHandler;
 import com.epam.ms.repository.DefaultNutritionProgramRepository;
 import com.epam.ms.repository.domain.DefaultNutritionProgram;
-import com.epam.ms.service.exception.ServiceException;
 import com.epam.ms.service.calculator.CaloriesCalculator;
 import com.epam.ms.service.calculator.model.UserProfile;
+import com.epam.ms.service.exception.ServiceException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static java.util.Objects.nonNull;
@@ -53,6 +55,7 @@ public class DefaultNutritionProgramService {
         repository.deleteById(id);
     }
 
+    @CircuitBreaker(name = "user", fallbackMethod = "fallback")
     public List<DefaultNutritionProgram> findForUser(String userId) {
         UserProfile userProfile = userClient.findProfileByUserId(userId);
         log.info("User profile: {}", userProfile);
@@ -81,5 +84,10 @@ public class DefaultNutritionProgramService {
         to.setPath(from.getPath());
         to.setCalories(from.getCalories());
         to.setNumberOfDays(from.getNumberOfDays());
+    }
+
+    private List<DefaultNutritionProgram> fallback(String id, Throwable e) {
+        log.error("The profile of the user% {id} could not be found", id);
+        return repository.findAll();
     }
 }
