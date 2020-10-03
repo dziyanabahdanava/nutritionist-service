@@ -25,6 +25,17 @@ feign:
   httpclient:
     enabled: true
 
+resilience4j.circuitbreaker:
+  instances:
+    user:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 10
+      waitDurationInOpenState: 30s
+      failureRateThreshold: 50
+
 #custom properties
 rabbitmq:
   host: localhost
