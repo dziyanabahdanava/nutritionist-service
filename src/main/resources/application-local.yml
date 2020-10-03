@@ -1,16 +1,12 @@
 server:
   port: 8082
 spring:
-  cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
   data:
     mongodb:
       database: nutritionist
       username: mongo
       password: mongo
-      host: localhost
+      host: mongodb
       port: 27017
 feign:
   client:
@@ -22,12 +18,10 @@ feign:
       user-service:
         connectTimeout: 2000
         readTimeout: 2000
-  httpclient:
-    enabled: true
 
 #custom properties
 rabbitmq:
-  host: localhost
+  host: rabbitmq
   queue: nutritionEventsQueue
 caloriescalculator:
   weightFactor: 9.99

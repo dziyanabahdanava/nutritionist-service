@@ -1,12 +1,16 @@
-version: '3'
+version: '3.5'
 services:
   rabbitmq:
+    networks:
+      - ms
     container_name: rabbitmq
     image: rabbitmq:management
     ports:
       - "5672:5672"
       - "15672:15672"
   mongodb:
+    networks:
+      - ms
     container_name: mongo
     image: mongo:latest
     environment:
@@ -17,3 +21,12 @@ services:
       - ./docker/mongo/:/docker-entrypoint-initdb.d/
     ports:
       - "27017:27017"
+  nutritionist-service:
+    build: ./
+    networks:
+      - ms
+    ports:
+      - "8082:8082"
+networks:
+  ms:
+    name: ms

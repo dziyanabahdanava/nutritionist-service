@@ -6,13 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@FeignClient(value = "user-service", url = "http://localhost:8080", path = "/users")
+@FeignClient(value = "user-service", path = "/users")
 public interface UserClient {
+
     @RequestMapping(method = GET, value = "/{id}/profiles")
     UserProfile findProfileByUserId(@PathVariable String id);
-
-    @RequestMapping(method = POST)
-    void create(UserProfile userProfile);
 }
